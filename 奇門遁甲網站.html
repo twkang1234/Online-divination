@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>白星奇老師 - 奇門遁甲線上占卜服務</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        .edit-mode {
+            border: 2px dashed #3b82f6;
+            position: relative;
+            cursor: pointer;
+        }
+        .edit-mode:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .edit-toolbar {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600"><defs><radialGradient id="grad1" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:0.8" /><stop offset="100%" style="stop-color:%23FF6B35;stop-opacity:0.4" /></radialGradient></defs><rect width="1000" height="600" fill="url(%23grad1)"/><circle cx="200" cy="150" r="3" fill="%23fff" opacity="0.8"/><circle cx="800" cy="100" r="2" fill="%23fff" opacity="0.6"/><circle cx="300" cy="400" r="2" fill="%23fff" opacity="0.7"/><circle cx="700" cy="450" r="3" fill="%23fff" opacity="0.5"/></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- 管理按鈕 -->
+    <div class="fixed top-4 right-4 z-50">
+        <button id="adminBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-lg transition-colors">
+            <i class="fas fa-cog mr-2"></i>管理
+        </button>
+    </div>
+
+    <!-- 編輯工具列 -->
+    <div id="editToolbar" class="edit-toolbar">
+        <div class="mb-2">
+            <button id="uploadImageBtn" class="bg-green-500 text-white px-3 py-1 rounded mr-2 text-sm">
+                <i class="fas fa-image mr-1"></i>上傳圖片
+            </button>
+            <button id="addLinkBtn" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                <i class="fas fa-link mr-1"></i>新增連結
+            </button>
+        </div>
+        <button id="exitEditMode" class="bg-red-500 text-white px-3 py-1 rounded text-sm w-full">
+            <i class="fas fa-times mr-1"></i>退出編輯
+        </button>
+    </div>
+
+    <!-- 隱藏的檔案上傳input -->
+    <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+
+    <!-- Header -->
+    <header class="hero-section text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-5xl font-bold mb-4 editable-text" data-field="main-title">白星奇老師</h1>
+            <h2 class="text-2xl mb-8 editable-text" data-field="sub-title">奇門遁甲線上占卜服務</h2>
+            <p class="text-xl mb-8 max-w-4xl mx-auto leading-relaxed editable-text" data-field="hero-desc">
+                奇門遁甲是中國古代神秘學中的一門特有預測占卜學。利用洛書軌跡、九宮八卦以及五行相生相克的原理，為我們揭示事物發展的規律，幫助我們在人生的旅途中做出更明智的選擇。
+            </p>
+            <div class="space-x-4">
+                <a href="#services" class="bg-yellow-500 hover:bg-yellow-600 text-black px-8 py-3 rounded-full font-semibold transition-colors editable-link" data-field="cta-button">立即諮詢</a>
+                <a href="https://soul-treasure.net/" target="_blank" class="border-2 border-white hover:bg-white hover:text-gray-800 px-8 py-3 rounded-full font-semibold transition-colors editable-link" data-field="blog-button">前往部落格</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 奇門遁甲介紹 -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gray-800 editable-text" data-field="intro-title">什麼是奇門遁甲？</h2>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="editable-image" data-field="intro-image">
+                    <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'><rect width='600' height='400' fill='%23f3f4f6'/><circle cx='300' cy='200' r='80' fill='%23374151' opacity='0.2'/><text x='300' y='210' text-anchor='middle' fill='%23374151' font-size='20'>奇門遁甲圖</text></svg>" alt="奇門遁甲" class="w-full rounded-lg shadow-lg">
+                </div>
+                <div>
+                    <div class="editable-text" data-field="intro-content">
+                        <p class="text-lg text-gray-700 mb-6">
+                            在浩瀚的傳統易學智慧中，奇門遁甲以其獨特的精密符號系統，建構出一個動態的時空運轉模型。它不僅能預測趨勢，更能深入解析個人事業發展的軌跡與潛在關鍵。
+                        </p>
+                        <p class="text-lg text-gray-700 mb-6">
+                            透過天、地、人、神四層交織而成的近百種象徵符號，將抽象難解的困境，轉化為具體、可操作的改善方向，為身陷迷霧的人點亮一盞明燈。
+                        </p>
+                        <p class="text-lg text-gray-700">
+                            當你獲取奇門盤的預測資訊時，你已經在開始改變原有的命運軌跡了，因為你早知道此路繼續走會如何，自然會想要改變念頭（改運契機）。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 服務項目 -->
+    <section id="services" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gray-800 editable-text" data-field="services-title">專業服務項目</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-star text-4xl text-yellow-500 mb-4"></i>
+                        <h3 class="text-2xl font-semibold text-gray-800 editable-text" data-field="service1-title">工作事業占卜</h3>
+                    </div>
+                    <div class="editable-text" data-field="service1-content">
+                        <p class="text-gray-600 text-center">職場困境、轉職時機、事業發展、合夥決策等工作相關問題的深度解析與指導</p>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-heart text-4xl text-red-500 mb-4"></i>
+                        <h3 class="text-2xl font-semibold text-gray-800 editable-text" data-field="service2-title">愛情感情占卜</h3>
+                    </div>
+                    <div class="editable-text" data-field="service2-content">
+                        <p class="text-gray-600 text-center">感情關係、戀愛發展、婚姻運勢、人際關係等情感問題的專業占卜服務</p>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-chart-line text-4xl text-green-500 mb-4"></i>
+                        <h3 class="text-2xl font-semibold text-gray-800 editable-text" data-field="service3-title">投資理財占卜</h3>
+                    </div>
+                    <div class="editable-text" data-field="service3-content">
+                        <p class="text-gray-600 text-center">股票投資、理財規劃、商業決策、偏財運勢等財運相關問題的精準預測</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 服務特色 -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gray-800 editable-text" data-field="features-title">服務特色</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="flex items-start space-x-4">
+                    <i class="fas fa-shield-alt text-2xl text-blue-500 mt-1"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2 editable-text" data-field="feature1-title">隱私保護</h3>
+                        <div class="editable-text" data-field="feature1-content">
+                            <p class="text-gray-600">所有服務不需提供八字、姓名、地址等個人資訊，完全保護您的隱私</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-4">
+                    <i class="fas fa-clock text-2xl text-green-500 mt-1"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2 editable-text" data-field="feature2-title">快速服務</h3>
+                        <div class="editable-text" data-field="feature2-content">
+                            <p class="text-gray-600">免預約，聯繫付款後馬上起盤占卜，2小時內必回復，六日無休</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-4">
+                    <i class="fas fa-user text-2xl text-purple-500 mt-1"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2 editable-text" data-field="feature3-title">真人親算</h3>
+                        <div class="editable-text" data-field="feature3-content">
+                            <p class="text-gray-600">一對一真人親算，非AI，30-50分鐘線上諮詢，讓你問到飽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-4">
+                    <i class="fas fa-globe text-2xl text-orange-500 mt-1"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2 editable-text" data-field="feature4-title">服務範圍廣</h3>
+                        <div class="editable-text" data-field="feature4-content">
+                            <p class="text-gray-600">香港、新加坡、大陸、台灣、澳洲等地皆有客戶，遠距線上諮詢</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 收費標準 -->
+    <section class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gray-800 editable-text" data-field="pricing-title">收費標準</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-4 text-gray-800 editable-text" data-field="pricing-standard-title">標準服務</h3>
+                            <div class="editable-text" data-field="pricing-standard-content">
+                                <ul class="space-y-2 text-gray-600">
+                                    <li><strong>正常標準流程：</strong> 800-1200台幣（優惠價）</li>
+                                    <li><strong>先驗證後付款：</strong> 1500-1800元</li>
+                                    <li><strong>優惠方案：</strong> 一次申請多個盤，最多優惠七折</li>
+                                    <li><strong>老客戶優惠：</strong> 享有月費制度等各種優惠</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-4 text-gray-800 editable-text" data-field="payment-title">支付方式</h3>
+                            <div class="editable-text" data-field="payment-content">
+                                <ul class="space-y-2 text-gray-600">
+                                    <li><strong>大陸：</strong> 微信或支付寶付款</li>
+                                    <li><strong>香港、新加坡：</strong> AlipayHK支付寶</li>
+                                    <li><strong>台灣：</strong> 台幣銀行轉帳</li>
+                                    <li><strong>澳洲：</strong> 澳幣付款</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 p-4 bg-yellow-50 border-l-4 border-yellow-400">
+                        <div class="editable-text" data-field="no-extra-fees">
+                            <p class="text-yellow-800"><strong>沒有額外其他費用</strong> - 不會推銷任何商品，單純只有收費起盤占卜費用</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 客戶好評 -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gray-800 editable-text" data-field="reviews-title">客戶好評</h2>
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div class="bg-gray-50 p-6 rounded-lg shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="editable-text" data-field="review1">
+                        <p class="text-gray-600 mb-4">"白老師的奇門遁甲真的很準！幫我解決了困擾很久的工作問題，給的建議很實用。"</p>
+                        <p class="text-sm text-gray-500">- 台北 陳小姐</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="editable-text" data-field="review2">
+                        <p class="text-gray-600 mb-4">"服務很專業，不用提供個人資料就能準確占卜，而且收費合理。"</p>
+                        <p class="text-sm text-gray-500">- 香港 李先生</p>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="editable-text" data-field="review3">
+                        <p class="text-gray-600 mb-4">"投資建議很有幫助，避免了不少損失，真的很感謝白老師！"</p>
+                        <p class="text-sm text-gray-500">- 新加坡 王小姐</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right">
+                <a href="https://soul-treasure.net/%e5%a5%87%e9%96%80%e9%81%81%e7%94%b2%e5%8d%a0%e5%8d%9c%e6%9c%8d%e5%8b%99%e5%ae%a2%e6%88%b6%e5%bf%83%e5%be%97%e8%a9%95%e5%83%b9/" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors editable-link" data-field="more-reviews-btn">
+                    觀看更多好評 <i class="fas fa-external-link-alt ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 聯絡方式 -->
+    <section class="py-16 gradient-bg text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold mb-8 editable-text" data-field="contact-title">聯絡白老師</h2>
+            <div class="editable-text" data-field="contact-desc">
+                <p class="text-xl mb-8">24小時服務，免預約，1-2小時內必回復</p>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8">
+                <div class="flex items-center space-x-4">
+                    <i class="fab fa-line text-3xl"></i>
+                    <div class="text-left">
+                        <div class="editable-text" data-field="line-title">
+                            <p class="font-semibold">Line ID</p>
+                        </div>
+                        <div class="editable-text" data-field="line-id">
+                            <p class="text-xl">starstrange</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <i class="fab fa-weixin text-3xl"></i>
+                    <div class="text-left">
+                        <div class="editable-text" data-field="wechat-title">
+                            <p class="font-semibold">微信 ID</p>
+                        </div>
+                        <div class="editable-text" data-field="wechat-id">
+                            <p class="text-xl">starstrange</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8">
+                <div class="editable-text" data-field="contact-note">
+                    <p class="text-lg">也提供深夜占卜服務，凌晨時段也可以找白老師問看看在不在</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="editable-text" data-field="footer-text">
+                <p>&copy; 2024 白星奇老師 - 奇門遁甲線上占卜服務。專業、準確、值得信賴。</p>
+            </div>
+            <div class="mt-4">
+                <a href="https://soul-treasure.net/" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors editable-link" data-field="footer-blog-link">
+                    前往官方部落格 <i class="fas fa-external-link-alt ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let isEditMode = false;
+        let currentEditElement = null;
+        let contentData = {};
+
+        // 載入儲存的內容
+        function loadContent() {
+            const saved = localStorage.getItem('websiteContent');
+            if (saved) {
+                contentData = JSON.parse(saved);
+                Object.keys(contentData).forEach(field => {
+                    const elements = document.querySelectorAll(`[data-field="${field}"]`);
+                    elements.forEach(element => {
+                        if (element.classList.contains('editable-text')) {
+                            element.innerHTML = contentData[field];
+                        } else if (element.classList.contains('editable-link')) {
+                            if (contentData[field].href) {
+                                element.href = contentData[field].href;
+                                element.innerHTML = contentData[field].text;
+                            }
+                        } else if (element.classList.contains('editable-image')) {
+                            const img = element.querySelector('img');
+                            if (img && contentData[field]) {
+                                img.src = contentData[field];
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
+        // 儲存內容
+        function saveContent() {
+            localStorage.setItem('websiteContent', JSON.stringify(contentData));
+        }
+
+        // 管理按鈕點擊
+        document.getElementById('adminBtn').addEventListener('click', function() {
+            if (isEditMode) {
+                exitEditMode();
+            } else {
+                const password = prompt('請輸入管理密碼：');
+                if (password === '112211') {
+                    enterEditMode();
+                } else if (password !== null) {
+                    alert('密碼錯誤！');
+                }
+            }
+        });
+
+        // 進入編輯模式
+        function enterEditMode() {
+            isEditMode = true;
+            document.getElementById('adminBtn').innerHTML = '<i class="fas fa-edit mr-2"></i>編輯中';
+            document.getElementById('adminBtn').classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            document.getElementById('adminBtn').classList.add('bg-green-600', 'hover:bg-green-700');
+            document.getElementById('editToolbar').style.display = 'block';
+
+            // 為所有可編輯元素添加編輯樣式
+            document.querySelectorAll('.editable-text, .editable-link, .editable-image').forEach(element => {
+                element.classList.add('edit-mode');
+                element.addEventListener('click', handleElementClick);
+            });
+
+            alert('已進入編輯模式！點擊任何文字、圖片或連結即可編輯。');
+        }
+
+        // 退出編輯模式
+        function exitEditMode() {
+            isEditMode = false;
+            document.getElementById('adminBtn').innerHTML = '<i class="fas fa-cog mr-2"></i>管理';
+            document.getElementById('adminBtn').classList.remove('bg-green-600', 'hover:bg-green-700');
+            document.getElementById('adminBtn').classList.add('bg-blue-600', 'hover:bg-blue-700');
+            document.getElementById('editToolbar').style.display = 'none';
+
+            // 移除所有編輯樣式
+            document.querySelectorAll('.edit-mode').forEach(element => {
+                element.classList.remove('edit-mode');
+                element.removeEventListener('click', handleElementClick);
+            });
+
+            currentEditElement = null;
+            saveContent();
+        }
+
+        // 處理元素點擊
+        function handleElementClick(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            currentEditElement = e.currentTarget;
+            const field = currentEditElement.getAttribute('data-field');
+
+            if (currentEditElement.classList.contains('editable-text')) {
+                editText(currentEditElement, field);
+            } else if (currentEditElement.classList.contains('editable-link')) {
+                editLink(currentEditElement, field);
+            } else if (currentEditElement.classList.contains('editable-image')) {
+                editImage(currentEditElement, field);
+            }
+        }
+
+        // 編輯文字
+        function editText(element, field) {
+            const currentText = element.innerHTML;
+            const newText = prompt('編輯文字內容：', currentText.replace(/<[^>]*>/g, ''));
+            
+            if (newText !== null && newText !== currentText) {
+                element.innerHTML = newText;
+                contentData[field] = newText;
+                saveContent();
+            }
+        }
+
+        // 編輯連結
+        function editLink(element, field) {
+            const currentHref = element.href;
+            const currentText = element.textContent;
+            
+            const newHref = prompt('編輯連結網址：', currentHref);
+            if (newHref !== null) {
+                const newText = prompt('編輯連結文字：', currentText);
+                if (newText !== null) {
+                    element.href = newHref;
+                    element.innerHTML = newText;
+                    contentData[field] = { href: newHref, text: newText };
+                    saveContent();
+                }
+            }
+        }
+
+        // 編輯圖片
+        function editImage(element, field) {
+            const choice = confirm('點擊「確定」上傳新圖片，點擊「取消」輸入圖片網址');
+            
+            if (choice) {
+                document.getElementById('imageUpload').click();
+                document.getElementById('imageUpload').onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = element.querySelector('img');
+                            img.src = e.target.result;
+                            contentData[field] = e.target.result;
+                            saveContent();
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+            } else {
+                const newSrc = prompt('請輸入圖片網址：');
+                if (newSrc) {
+                    const img = element.querySelector('img');
+                    img.src = newSrc;
+                    contentData[field] = newSrc;
+                    saveContent();
+                }
+            }
+        }
+
+        // 上傳圖片按鈕
+        document.getElementById('uploadImageBtn').addEventListener('click', function() {
+            if (currentEditElement && currentEditElement.classList.contains('editable-image')) {
+                document.getElementById('imageUpload').click();
+            } else {
+                alert('請先選擇一個圖片區域');
+            }
+        });
+
+        // 新增連結按鈕
+        document.getElementById('addLinkBtn').addEventListener('click', function() {
+            if (currentEditElement && currentEditElement.classList.contains('editable-text')) {
+                const selectedText = window.getSelection().toString();
+                if (selectedText) {
+                    const url = prompt('請輸入連結網址：');
+                    if (url) {
+                        const linkHtml = `<a href="${url}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">${selectedText}</a>`;
+                        const content = currentEditElement.innerHTML.replace(selectedText, linkHtml);
+                        currentEditElement.innerHTML = content;
+                        const field = currentEditElement.getAttribute('data-field');
+                        contentData[field] = content;
+                        saveContent();
+                    }
+                } else {
+                    alert('請先選取要加上連結的文字');
+                }
+            } else {
+                alert('請先選擇一個文字區域並選取要加連結的文字');
+            }
+        });
+
+        // 退出編輯按鈕
+        document.getElementById('exitEditMode').addEventListener('click', exitEditMode);
+
+        // 平滑滾動
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                if (!isEditMode) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // 載入內容
+        loadContent();
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"9611cf349ed9648c","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"version":"2025.7.0","token":"4edd5f8ec12a48cfa682ab8261b80a79"}' crossorigin="anonymous"></script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDuFZylhDuo%2BnLeY200xkIEi3kWtPgR%2F%2F%2BdZNhizYpufKfbrSdK6Xa9fXUUCBnor8clBNG910WF6RvkuMgsku1JTNi7uDa9QTGtBDHvekm5ZJcm5ECn9A%2Bs3l9rpHIJaK6TgBsfIaquGh4ZLO5kpcdDaLWttCyeLdRTseoxR1rQbl2IYLwk2zvzujGOhUnPOp9eOhrAQQF5%2BZhJXZJihOejDo1aySoiTFtR37ZjIBAhHmbaK%2BDK4hcO%2FS69IMX36fWGUjg6Eh83%2BXz8LSXzds8ZvNNE7U8huVAax5Vp7ER3t0Plf1c2dYUZvcxjo4KxKkuAWgYn38k5nw8wp8%2FGeRp5QEaF2Gzx04mwRMOE9KPvzsL%2F77DptI7afbbcxc55jj9VsT59Qmhr9Yl06dcJIw89SaFr5kH3oxSlDVN75HUY6%2F7aXFvQJHqEdBiVrLkhI%2FcwRsz5F97XHRtqGyW7lplLIeIGY0q9XXmNMnAPJff8zdHZhNxoy%2BQhYYjzrvxZ5bIBlI%2BhUxqlpxSeDRnUIbdEw%3D";
+        window.__genspark_locale = "zh-TW";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDuFZylhDuo+nLeY200xkIEi3kWtPgR//+dZNhizYpufKfbrSdK6Xa9fXUUCBnor8clBNG910WF6RvkuMgsku1JTNi7uDa9QTGtBDHvekm5ZJcm5ECn9A+s3l9rpHIJaK6TgBsfIaquGh4ZLO5kpcdDaLWttCyeLdRTseoxR1rQbl2IYLwk2zvzujGOhUnPOp9eOhrAQQF5+ZhJXZJihOejDo1aySoiTFtR37ZjIBAhHmbaK+DK4hcO/S69IMX36fWGUjg6Eh83+Xz8LSXzds8ZvNNE7U8huVAax5Vp7ER3t0Plf1c2dYUZvcxjo4KxKkuAWgYn38k5nw8wp8/GeRp5QEaF2Gzx04mwRMOE9KPvzsL/77DptI7afbbcxc55jj9VsT59Qmhr9Yl06dcJIw89SaFr5kH3oxSlDVN75HUY6/7aXFvQJHqEdBiVrLkhI/cwRsz5F97XHRtqGyW7lplLIeIGY0q9XXmNMnAPJff8zdHZhNxoy+QhYYjzrvxZ5bIBlI+hUxqlpxSeDRnUIbdEw=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    
